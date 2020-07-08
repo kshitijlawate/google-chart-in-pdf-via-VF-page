@@ -1,0 +1,75 @@
+<apex:page controller="GraphPageController" sidebar="false" showHeader="false" standardStylesheets="false"> 
+<apex:includeScript id="a" value="https://www.google.com/jsapi" />
+     
+    
+    
+    <p style="text-align:center;margin-top:200px;background-color:white;z-index:1000;">
+        <img style="margin:4px;" src="/img/loading.gif" title="Please Wait..." /><br/>
+        <apex:outputText value="Generating Chart ... Please Wait ... "/>
+    </p>
+    
+    <!-- Chart will be drawn in this Div, hiding the same as it is not required to be shown -->
+    <div id="chartBlock" style="visibility:hidden;"/>
+    
+    
+    <script type="text/javascript">
+        // Load the Visualization API and the piechart package.
+        google.load('visualization', '1.0', {'packages':['corechart']});
+       
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.setOnLoadCallback(initCharts);
+   
+        function initCharts() 
+        {         
+            Visualforce.remoting.Manager.invokeAction
+            (
+            '{!$RemoteAction.GraphPageController.fetchOppData}',      //fetching chart data       
+                function(result, event)
+                {  
+                    // load Column chart
+                    var oppChart = new google.visualization.ColumnChart(document.getElementById('chartBlock'));
+                    // Prepare table model for chart with columns
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Close Date');
+                    data.addColumn('number', 'Sum of Amount');
+
+                    // add rows from the remoting results
+                    for(var i =0; i<result.length;i++)
+                    {
+                        var r = result[i];
+                        data.addRow([r.closeDate, r.amtSum]); 
+                    }
+                    
+                    //adding listener when Chart drawn is completed to generate base64 image string for the chart
+                    google.visualization.events.addListener(oppChart, 'ready', function () 
+                    {
+                        Visualforce.remoting.Manager.invokeAction
+                        (
+                            '{!$RemoteAction.GraphPageController.insertChartImage}',
+                            oppChart.getImageURI(), 
+                            function(result, event)
+                            {
+                                if(result != null && result != 'ERROR')
+                                {
+                                    window.location.href = '/apex/ChartPagePDF?docId='+result;
+                                }
+                            }, 
+                            {escape: true}
+                        );
+                    });
+
+
+                    //lets draw the chart with some options to make it look nice.
+                    oppChart.draw(data, 
+                    {   
+                        legend : { position: 'top' }, 
+                        width : window.innerWidth,
+                        vAxis : { textStyle : {fontSize: 10} },
+                        hAxis : {textStyle : {fontSize: 10}, showTextEvery : 1, slantedText : false }
+                    });
+                }, 
+                {escape:true}
+            );
+        }
+    </script>
+</apex:page>

@@ -1,0 +1,33 @@
+<apex:page controller="GraphPageController" showHeader="false" standardStylesheets="false" renderAs="pdf" applyHTMLTag="false">
+<head>
+<style>
+body
+{
+    font-family: sans-serif;
+}
+.alignCenter
+{
+    text-align:center;
+    padding:2px;
+}
+@page
+{
+    size: landscape;
+}
+</style>
+</head>
+<body>
+<h2> Opportunity Chart </h2>
+<apex:dataTable value="{!wrList}" var="wr" style="width:50%;margin:auto;border:1px solid black;">
+<apex:column headerValue="Close Date" width="125px" style="text-align:center;padding:2px;" headerClass="alignCenter">
+    <apex:outputText value="{!wr.closeDate}"/>
+</apex:column>
+<apex:column headerValue="Sum of Amount" width="125px" style="text-align:center;padding:2px;" headerClass="alignCenter">
+    <apex:outputText value="{!wr.amtSum}"/>
+</apex:column>
+</apex:dataTable>
+
+<div style="clear:both;height:25px;"></div>
+<apex:image value="/servlet/servlet.FileDownload?file={!docId}" style="width:100%;"/>
+</body>
+</apex:page>

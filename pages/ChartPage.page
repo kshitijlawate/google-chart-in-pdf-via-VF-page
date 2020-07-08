@@ -1,0 +1,27 @@
+<apex:page controller="GraphPageController" lightningStylesheets="true">
+<style>
+.alignCenter
+{
+    text-align:center; 
+    padding:2px;
+}
+</style>
+<apex:sectionHeader title="Opportunity Table"/>
+<apex:form >
+<apex:pageblock mode="maindetail">
+<apex:pageBlockTable value="{!wrList}" var="wr" style="width:30%;margin:auto;">
+<apex:column headerValue="Close Date" width="125px" style="text-align:center;padding:2px;" headerClass="alignCenter">
+    <apex:outputText value="{!wr.closeDate}"/>
+</apex:column>
+<apex:column headerValue="Sum of Amount" width="125px" style="text-align:center;padding:2px;" headerClass="alignCenter">
+    <apex:outputText value="{!wr.amtSum}"/>
+</apex:column>
+</apex:pageBlockTable>
+</apex:pageblock>
+<p style="text-align:center;">
+    <apex:outputLink value="{!$Page.IntermediatePage}" style="padding: 5px;text-decoration: none;" styleclass="btn">
+        <apex:outputText value="See the beautiful chart in PDF!"/>
+    </apex:outputLink>
+</p>
+</apex:form>
+</apex:page>
